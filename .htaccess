@@ -1,0 +1,7 @@
+RewriteEngine on
+
+RewriteCond %{REQUEST_METHOD} ^GET$
+	RewriteRule ^trickortreat$ trickortreat.html [L,QSA]
+
+RewriteCond %{REQUEST_METHOD} ^POST$
+	RewriteRule ^trickortreat(/.*)?$ http://127.0.0.1:5000/$1 [P]

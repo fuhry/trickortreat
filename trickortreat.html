@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Trick Or Treat @ The Fuhrys'</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+        <style type="text/css">
+            body {
+                background-color: black;
+                color: #ff8000;
+                font-family: sans-serif;
+            }
+            input[type="color"] {
+                width: 200px;
+                height: 120px;
+            }
+            a:link, a:visited {
+                color: #a06000;
+            }
+            hr {
+                margin-top: 4em;
+                border-color: #444;
+            }
+            address {
+                color: #888;
+            }
+        </style>
+        <script type="text/javascript">
+        window.addEventListener('load', function()
+            {
+                const inpColor = document.getElementById("inp-color");
+                const btnSubmit = document.getElementById("btn-submit");
+                const lblStatus = document.getElementById("lbl-status");
+
+                btnSubmit.addEventListener("click", event => fireColorChange());
+                inpColor.addEventListener('change', event => fireColorChange());
+            });
+
+        async function fireColorChange()
+        {
+            const inpColor = document.getElementById("inp-color");
+            const btnSubmit = document.getElementById("btn-submit");
+            const lblStatus = document.getElementById("lbl-status");
+
+            lblStatus.innerHTML = '';
+
+            try {
+                // grab hex color code
+                let color = inpColor.value.substr(1, 6);
+                // parse as hex
+                color = parseInt(color, 16);
+                let r = (color >> 16) & 0xFF,
+                    g = (color >> 8)  & 0xFF,
+                    b = color & 0xFF;
+
+                let request = `r=${r}&g=${g}&b=${b}`;
+
+                let result = await fetch('/trickortreat/solid', {
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    method: 'POST',
+                    body: request,
+                }),
+                    result_j = await result.json();
+
+                if (result_j.success) {
+                    lblStatus.append(document.createTextNode('Success!'));
+                }
+                else {
+                    throw new Error("Something went wrong... please try again.");
+                }
+            }
+            catch (e) {
+                lblStatus.append(document.createTextNode(String(e)));
+            }
+        }
+
+        </script>
+    </head>
+    <body>
+        <h1>Change the color of the lights!</h1>
+        <p><input type="color" id="inp-color" value="#00a800" /></p>
+        <p><input type="button" id="btn-submit" value="Update" /> <span id="lbl-status"></span></p>
+
+        <hr />
+        <address>
+            &copy; 2020 Dan Fuhry &bull;
+            <a href="https://github.com/fuhry/trickortreat">Source Code</a> &bull;
+            <a href="https://fuhry.com/contact">Contact</a>
+        </address>
+    </body>
+</html>
